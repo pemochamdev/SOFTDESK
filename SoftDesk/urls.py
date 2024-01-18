@@ -15,8 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+#from rest_framework_simplejwt import views as jwt_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('api/', include("core.api.urls")),
+    path("api-auth/", include("rest_framework.urls")),
+
+    path("", include("accounts.urls", namespace="accounts")),
+
+]+static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
