@@ -34,6 +34,9 @@ ROLE_CHOICES = (
     ('admin', 'ADMIN'),
 )
 
+# PERMISSION_CHOICES = [("Read", "Read"), ("All", "All")]
+# ROLE_CHOICES = [("Author", "Author"), ("Manager", "Manager"), ("Creator", "Creator")]
+
 PERMISSION_CHOICES = (
     ('read', 'READ'),
     ('contributor', 'CONTRIBUTOR')
@@ -46,7 +49,7 @@ class Project(models.Model):
     slug = models.SlugField()
     type = models.CharField(max_length = 20, choices = TYPES_CHOICES)
     description = models.TextField()
-    contributor = models.ManyToManyField(settings.AUTH_USER_MODEL, through='contributor')
+    contributors = models.ManyToManyField(settings.AUTH_USER_MODEL, through='contributor', blank=True)
     created_at = models.DateTimeField(auto_now_add = True)
     
     
@@ -71,6 +74,9 @@ class Contributor(models.Model):
     project = models.ForeignKey(Project, on_delete = models.CASCADE, related_name = 'project_contributor')
     permission = models.CharField(max_length  =12, choices = PERMISSION_CHOICES)
     role = models.CharField(max_length  =12, choices = ROLE_CHOICES)
+
+    def __str__(self):
+        return str(self.user)
     
     
 
@@ -96,4 +102,5 @@ class Comment(models.Model):
     date_created = models.DateTimeField(auto_now_add = True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE,related_name = 'comment_author' )
     issue = models.ForeignKey(Issues, on_delete = models.CASCADE, related_name = "comment")
+    project = models.ForeignKey(Project, related_name='project', on_delete=models.CASCADE)
     

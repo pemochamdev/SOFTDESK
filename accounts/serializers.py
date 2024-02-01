@@ -5,16 +5,18 @@ from rest_framework import serializers
 
 from .models import CustomUser, Profile
 
-class CustomUserSerializer(serializers.ModelSerializer):
+
+class CustomUserSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class to serialize CustomUser model.
-    """
+    """        
+    
 
     class Meta:
         model = CustomUser
         fields = ("id", "username", "email")
 
-class UserRegisterationSerializer(serializers.ModelSerializer):
+class UserRegisterationSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class to serialize registration requests and create a new user.
     """

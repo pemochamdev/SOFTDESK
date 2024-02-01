@@ -13,11 +13,11 @@ from core.api import permissions as permis_api
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = seria_api.ProjectSerializer
-    permission_classes = [permis_api.IsProjectAuthor]
+    permission_classes = [permis_api.IsProjectAuthor or permis_api.IsContributorOrReadOnly]
     
 
     def get_queryset(self):
-        contributors = [project.contributor.through.objects.all() for project in self.queryset]
+        contributors = [project.contributors.through.objects.all() for project in self.queryset]
 
         contributors_project = []
         for contributor in contributors:
@@ -34,15 +34,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ProjectDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = seria_api.ProjectSerializer
-    permission_classes = [permis_api.IsProjectAuthor]
+    permission_classes = [permis_api.IsProjectAuthor, permis_api.IsContributorOrReadOnly]
 
         
     
 
 
 class AddContributorsToProjectView(generics.UpdateAPIView):
-    queryset = Project.objects.all()
-    serializer_class = seria_api.ProjectSerializer
+    queryset = Contributor.objects.all()
+    serializer_class = seria_api.ContributorSerializer
+    permission_classes = [permis_api.IsProjectAuthor]
 
 
     def update(self, request, *args, **kwargs):

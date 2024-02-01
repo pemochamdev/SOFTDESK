@@ -31,7 +31,7 @@ class IsCommentAuthor(permissions.BasePermission):
 
 
 
-class IsContributorOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
+class IsContributorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         
         # Verifie s le user est un contributeur du project associe a l'object

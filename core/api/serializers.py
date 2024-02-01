@@ -4,14 +4,14 @@ from core.models import Project, Comment, Contributor, Issues
 
 
 
-class ContributorSerializer(serializers.ModelSerializer):
+class ContributorSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
       model = Contributor
       fields = "__all__"
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
    class Meta:
       model = Comment
@@ -20,22 +20,41 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
    author = serializers.ReadOnlyField(source='author.username')
+   contributors = serializers.SerializerMethodField(read_only=True)
+   issues = serializers.SerializerMethodField(read_only=True)
+   comment = serializers.SerializerMethodField(read_only=True)
+
    class Meta:
       model = Project
-    #    fields = "__all__"
-      exclude = ['slug']
+      fields = ('id', 'author','title', 'description','type', 'contributors', 'comment', 'issues')
+      
    
 
    def get_contributors(self, obj):
-      pass
+      contributors = list(
+         contributor.email for contributor in obj.contributors.get_queryset().only('email')
+      )
+      return contributors
 
+   def get_comment(self, obj):
+      projects = list(
 
+         project.description for project in obj.project.get_queryset().only('description')
+      )
+      return projects
+   
 
+   def get_issues(self, obj):
+      issues = list(
+         issue.title for issue in obj.project_issues.get_queryset().only('title')
+      )
+      return issues
+   
 
-class IssuesSerializer(serializers.ModelSerializer):
+class IssuesSerializer(serializers.HyperlinkedModelSerializer):
     
    user = serializers.ReadOnlyField(source='user.username')
 
